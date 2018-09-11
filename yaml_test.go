@@ -13,7 +13,7 @@ func TestLoader(t *testing.T) {
 		FlagName string
 		Command  struct {
 			NestedFlag string
-		} `cmd`
+		} `cmd:""`
 	}
 	r := strings.NewReader(`
 flag-name: "hello world"
