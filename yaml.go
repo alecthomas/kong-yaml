@@ -1,47 +1,34 @@
 package kongyaml
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/alecthomas/kong"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // Loader is a Kong configuration loader for YAML.
-func Loader(r io.Reader) (kong.ResolverFunc, error) {
-	decoder := yaml.NewDecoder(r)
-	config := map[interface{}]interface{}{}
-	err := decoder.Decode(config)
-	if err != nil {
+func Loader(r io.Reader) (kong.Resolver, error) {
+	var config map[string]interface{}
+	if err := yaml.NewDecoder(r).Decode(&config); err != nil {
 		return nil, err
 	}
-	return func(context *kong.Context, parent *kong.Path, flag *kong.Flag) (string, error) {
+	var f kong.ResolverFunc = func(_ *kong.Context, parent *kong.Path, flag *kong.Flag) (interface{}, error) {
 		// Build a string path up to this flag.
-		path := []string{}
+		var path []string
 		for n := parent.Node(); n != nil && n.Type != kong.ApplicationNode; n = n.Parent {
-			path = append([]string{n.Name}, path...)
+			path = append(path, n.Name)
 		}
-		path = append(path, flag.Name)
-		value := find(config, path)
-		switch value := value.(type) {
-		case string:
-			return value, nil
-		case nil:
-			return "", nil
-		default:
-			return fmt.Sprintf("%v", value), nil
+		// Shallow copy parsed config.
+		config := config
+		// Path is in reverse order.
+		for i := len(path) - 1; i >= 0; i-- {
+			var ok bool
+			if config, ok = config[path[i]].(map[string]interface{}); !ok {
+				return nil, nil
+			}
 		}
-	}, nil
-}
-
-func find(config map[interface{}]interface{}, path []string) interface{} {
-	if len(path) == 1 {
-		return config[path[0]]
+		return config[flag.Name], nil
 	}
-	child, ok := config[path[0]].(map[interface{}]interface{})
-	if !ok {
-		return nil
-	}
-	return find(child, path[1:])
+	return f, nil
 }
