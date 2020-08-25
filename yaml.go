@@ -2,6 +2,7 @@ package kongyaml
 
 import (
 	"io"
+	"strings"
 
 	"github.com/alecthomas/kong"
 	"gopkg.in/yaml.v3"
@@ -28,7 +29,8 @@ func Loader(r io.Reader) (kong.Resolver, error) {
 				return nil, nil
 			}
 		}
-		return config[flag.Name], nil
+		name := strings.ReplaceAll(flag.Name, "-", "_")
+		return config[name], nil
 	}
 	return f, nil
 }
