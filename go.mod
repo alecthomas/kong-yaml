@@ -1,10 +1,9 @@
 module github.com/alecthomas/kong-yaml
 
-go 1.15
-
 require (
-	github.com/alecthomas/kong v0.2.11
-	github.com/pkg/errors v0.9.1 // indirect
-	github.com/stretchr/testify v1.6.1
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
+	github.com/alecthomas/kong v0.0.0-20180911000223-862837e6faa2
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/stretchr/testify v1.2.2
+	gopkg.in/yaml.v2 v2.2.1
 )
