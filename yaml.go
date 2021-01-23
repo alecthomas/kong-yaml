@@ -1,8 +1,8 @@
 package kongyaml
 
 import (
-	"fmt"
 	"io"
+	"strings"
 
 	"github.com/alecthomas/kong"
 	"gopkg.in/yaml.v2"
@@ -16,32 +16,24 @@ func Loader(r io.Reader) (kong.ResolverFunc, error) {
 	if err != nil {
 		return nil, err
 	}
-	return func(context *kong.Context, parent *kong.Path, flag *kong.Flag) (string, error) {
+	return func(context *kong.Context, parent *kong.Path, flag *kong.Flag) (interface{}, error) {
 		// Build a string path up to this flag.
 		path := []string{}
 		for n := parent.Node(); n != nil && n.Type != kong.ApplicationNode; n = n.Parent {
 			path = append([]string{n.Name}, path...)
 		}
 		path = append(path, flag.Name)
-		value := find(config, path)
-		switch value := value.(type) {
-		case string:
-			return value, nil
-		case nil:
-			return "", nil
-		default:
-			return fmt.Sprintf("%v", value), nil
-		}
+		path = strings.Split(strings.Join(path, "-"), "-")
+		return find(config, path), nil
 	}, nil
 }
 
 func find(config map[interface{}]interface{}, path []string) interface{} {
-	if len(path) == 1 {
-		return config[path[0]]
+	for i := 0; i < len(path); i++ {
+		prefix := strings.Join(path[:i+1], "-")
+		if child, ok := config[prefix].(map[interface{}]interface{}); ok {
+			return find(child, path[i+1:])
+		}
 	}
-	child, ok := config[path[0]].(map[interface{}]interface{})
-	if !ok {
-		return nil
-	}
-	return find(child, path[1:])
+	return config[strings.Join(path, "-")]
 }
