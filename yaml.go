@@ -1,6 +1,7 @@
 package kongyaml
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
@@ -14,7 +15,7 @@ func Loader(r io.Reader) (kong.Resolver, error) {
 	config := map[interface{}]interface{}{}
 	err := decoder.Decode(config)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("YAML config decode error: %w", err)
 	}
 	return kong.ResolverFunc(func(context *kong.Context, parent *kong.Path, flag *kong.Flag) (interface{}, error) {
 		// Build a string path up to this flag.
@@ -29,6 +30,9 @@ func Loader(r io.Reader) (kong.Resolver, error) {
 }
 
 func find(config map[interface{}]interface{}, path []string) interface{} {
+	if len(path) == 0 {
+		return convertToStringMap(config)
+	}
 	for i := 0; i < len(path); i++ {
 		prefix := strings.Join(path[:i+1], "-")
 		if child, ok := config[prefix].(map[interface{}]interface{}); ok {
@@ -36,4 +40,13 @@ func find(config map[interface{}]interface{}, path []string) interface{} {
 		}
 	}
 	return config[strings.Join(path, "-")]
+}
+
+func convertToStringMap(in map[interface{}]interface{}) map[string]interface{} {
+	out := make(map[string]interface{}, len(in))
+	for k, v := range in {
+		out[k.(string)] = v
+	}
+
+	return out
 }

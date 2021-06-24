@@ -19,6 +19,7 @@ func TestLoader(t *testing.T) {
 			One string
 			Two bool
 		} `embed:"" prefix:"embed-"`
+		Dict map[string]string
 	}
 	var cli CLI
 	r := strings.NewReader(`
@@ -34,6 +35,8 @@ command:
     nested-flag: "nested flag"
     number: 1.0
     int: 12342345234534
+dict:
+    foo: bar
 `)
 	resolver, err := Loader(r)
 	require.NoError(t, err)
@@ -53,6 +56,9 @@ command:
 		}{
 			One: "str",
 			Two: true,
+		},
+		Dict: map[string]string{
+			"foo": "bar",
 		},
 	}
 	require.Equal(t, expected, cli)

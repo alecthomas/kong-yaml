@@ -18,8 +18,6 @@ linters:
 linters-settings:
   govet:
     check-shadowing: true
-  gocyclo:
-    min-complexity: 10
   dupl:
     threshold: 100
   goconst:
