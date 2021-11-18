@@ -1,4 +1,4 @@
-# A Kong YAML utilities [![](https://godoc.org/github.com/alecthomas/kong-yaml?status.svg)](http://godoc.org/github.com/alecthomas/kong-yaml) [![CircleCI](https://img.shields.io/circleci/project/github/alecthomas/kong-yaml.svg)](https://circleci.com/gh/alecthomas/kong-yaml)
+# Kong YAML utilities [![](https://godoc.org/github.com/alecthomas/kong-yaml?status.svg)](http://godoc.org/github.com/alecthomas/kong-yaml) [![CircleCI](https://img.shields.io/circleci/project/github/alecthomas/kong-yaml.svg)](https://circleci.com/gh/alecthomas/kong-yaml)
 
 ## Configuration loader
 
