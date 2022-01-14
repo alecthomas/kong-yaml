@@ -1,6 +1,7 @@
 package kongyaml
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -14,7 +15,7 @@ func Loader(r io.Reader) (kong.Resolver, error) {
 	decoder := yaml.NewDecoder(r)
 	config := map[interface{}]interface{}{}
 	err := decoder.Decode(config)
-	if err != nil {
+	if err != nil && !errors.Is(err, io.EOF) {
 		return nil, fmt.Errorf("YAML config decode error: %w", err)
 	}
 	return kong.ResolverFunc(func(context *kong.Context, parent *kong.Path, flag *kong.Flag) (interface{}, error) {

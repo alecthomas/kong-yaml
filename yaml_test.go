@@ -63,3 +63,21 @@ dict:
 	}
 	require.Equal(t, expected, cli)
 }
+
+func TestEmptyFile(t *testing.T) {
+	type CLI struct {
+		FlagName string
+	}
+	var cli CLI
+	r := strings.NewReader("")
+	resolver, err := Loader(r)
+	require.NoError(t, err)
+	parser, err := kong.New(&cli, kong.Resolvers(resolver))
+	require.NoError(t, err)
+	_, err = parser.Parse([]string{})
+	require.NoError(t, err)
+	expected := CLI{
+		FlagName: "",
+	}
+	require.Equal(t, expected, cli)
+}
