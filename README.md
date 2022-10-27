@@ -5,7 +5,7 @@
 Use it like so:
 
 ```go
-parser, err := kong.New(&cli, kong.Configuration(kongyaml.Loader, "/etc/myapp/config.yaml", "~/.myapp.yaml))
+parser, err := kong.New(&cli, kong.Configuration(kongyaml.Loader, "/etc/myapp/config.yaml", "~/.myapp.yaml"))
 ```
 
 ## YAMLFileMapper
