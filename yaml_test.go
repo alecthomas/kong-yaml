@@ -1,6 +1,7 @@
 package kongyaml
 
 import (
+	"net/netip"
 	"strings"
 	"testing"
 
@@ -19,7 +20,14 @@ func TestLoader(t *testing.T) {
 			One string
 			Two bool
 		} `embed:"" prefix:"embed-"`
-		Dict map[string]string
+		Dict          map[string]string
+		NestedDict    map[string]map[string]bool
+		NonStringDict map[netip.Addr][]string
+		TypedDict     map[string]struct {
+			Foo string
+			Bar float64
+		}
+		TypedSlice []struct{ Foo string }
 	}
 	var cli CLI
 	r := strings.NewReader(`
@@ -37,6 +45,18 @@ command:
     int: 12342345234534
 dict:
     foo: bar
+nested-dict:
+    foo:
+        bar: true # also settable as --nested-dict=foo=bar=true
+non-string-dict:
+    "1.2.3.4": ["foo", "bar"]
+typed-dict:
+    foo:
+        foo: bar
+        bar: 1.337
+typed-slice:
+    - foo: bar
+    - foo: baz
 `)
 	resolver, err := Loader(r)
 	require.NoError(t, err)
@@ -59,6 +79,27 @@ dict:
 		},
 		Dict: map[string]string{
 			"foo": "bar",
+		},
+		NestedDict: map[string]map[string]bool{
+			"foo": {
+				"bar": true,
+			},
+		},
+		NonStringDict: map[netip.Addr][]string{
+			netip.MustParseAddr("1.2.3.4"): {"foo", "bar"},
+		},
+		TypedDict: map[string]struct {
+			Foo string
+			Bar float64
+		}{
+			"foo": {
+				Foo: "bar",
+				Bar: 1.337,
+			},
+		},
+		TypedSlice: []struct{ Foo string }{
+			{Foo: "bar"},
+			{Foo: "baz"},
 		},
 	}
 	require.Equal(t, expected, cli)

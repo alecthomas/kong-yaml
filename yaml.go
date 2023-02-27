@@ -7,13 +7,13 @@ import (
 	"strings"
 
 	"github.com/alecthomas/kong"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // Loader is a Kong configuration loader for YAML.
 func Loader(r io.Reader) (kong.Resolver, error) {
 	decoder := yaml.NewDecoder(r)
-	config := map[interface{}]interface{}{}
+	config := map[string]interface{}{}
 	err := decoder.Decode(config)
 	if err != nil && !errors.Is(err, io.EOF) {
 		return nil, fmt.Errorf("YAML config decode error: %w", err)
@@ -30,24 +30,15 @@ func Loader(r io.Reader) (kong.Resolver, error) {
 	}), nil
 }
 
-func find(config map[interface{}]interface{}, path []string) interface{} {
+func find(config map[string]interface{}, path []string) interface{} {
 	if len(path) == 0 {
-		return convertToStringMap(config)
+		return config
 	}
 	for i := 0; i < len(path); i++ {
 		prefix := strings.Join(path[:i+1], "-")
-		if child, ok := config[prefix].(map[interface{}]interface{}); ok {
+		if child, ok := config[prefix].(map[string]interface{}); ok {
 			return find(child, path[i+1:])
 		}
 	}
 	return config[strings.Join(path, "-")]
-}
-
-func convertToStringMap(in map[interface{}]interface{}) map[string]interface{} {
-	out := make(map[string]interface{}, len(in))
-	for k, v := range in {
-		out[k.(string)] = v
-	}
-
-	return out
 }

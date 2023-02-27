@@ -5,7 +5,7 @@ import (
 	"reflect"
 
 	"github.com/alecthomas/kong"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // YAMLFileMapper implements kong.MapperValue to decode a YAML file into
