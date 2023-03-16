@@ -1,7 +1,6 @@
 package kongyaml
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/alecthomas/kong"
@@ -34,7 +33,7 @@ func TestYAMLFileMapperErr(t *testing.T) {
 	}
 	opts := []kong.Option{
 		kong.NamedMapper("yamlfile", YAMLFileMapper),
-		kong.Exit(func(int) { fmt.Println("EXIT") }),
+		kong.Exit(func(int) { t.Log("EXIT") }),
 	}
 	parser, err := kong.New(&cli, opts...)
 	require.NoError(t, err)
