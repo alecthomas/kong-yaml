@@ -3,7 +3,7 @@ module github.com/alecthomas/kong-yaml
 go 1.18
 
 require (
-	github.com/alecthomas/kong v0.2.12
+	github.com/alecthomas/kong v1.12.1
 	github.com/stretchr/testify v1.8.1
 	gopkg.in/yaml.v3 v3.0.1
 )
