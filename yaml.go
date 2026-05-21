@@ -62,7 +62,7 @@ func Loader(r io.Reader) (kong.Resolver, error) {
 }
 
 // StrictLoader is a Kong configuration loader for YAML.
-// It errors when it encounters undefined fields in the file.
+// It errors when it encounters undefined keys in the file.
 func StrictLoader(r io.Reader) (kong.Resolver, error) {
 	return loader(r, true)
 }
