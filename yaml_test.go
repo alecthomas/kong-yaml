@@ -105,6 +105,23 @@ typed-slice:
 	require.Equal(t, expected, cli)
 }
 
+func TestStrictLoader(t *testing.T) {
+	type CLI struct {
+		Known string
+	}
+	var cli CLI
+	r := strings.NewReader(`
+known: foo
+unknown: 456
+`)
+	resolver, err := StrictLoader(r)
+	require.NoError(t, err)
+	parser, err := kong.New(&cli, kong.Resolvers(resolver))
+	require.NoError(t, err)
+	_, err = parser.Parse([]string{})
+	require.Error(t, err)
+}
+
 func TestEmptyFile(t *testing.T) {
 	type CLI struct {
 		FlagName string
