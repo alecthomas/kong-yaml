@@ -58,7 +58,18 @@ func (y *yamlResolver) Resolve(context *kong.Context, parent *kong.Path, flag *k
 
 // Loader is a Kong configuration loader for YAML.
 func Loader(r io.Reader) (kong.Resolver, error) {
+	return loader(r, false)
+}
+
+// StrictLoader is a Kong configuration loader for YAML.
+// It errors when it encounters undefined keys in the file.
+func StrictLoader(r io.Reader) (kong.Resolver, error) {
+	return loader(r, true)
+}
+
+func loader(r io.Reader, strict bool) (kong.Resolver, error) {
 	decoder := yaml.NewDecoder(r)
+	decoder.KnownFields(strict)
 	config := map[string]any{}
 	err := decoder.Decode(config)
 	if err != nil && !errors.Is(err, io.EOF) {
